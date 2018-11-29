@@ -1,12 +1,70 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace AppMain
+﻿namespace AppMain
 {
-    public class PBEncoder
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
+    using DotNetty.Buffers;
+    using DotNetty.Codecs;
+    using DotNetty.Transport.Channels;
+
+    public class PBEncoder : MessageToByteEncoder<IByteBuffer>
     {
+        protected override void Encode(IChannelHandlerContext context, IByteBuffer message, IByteBuffer output)
+        {
+            Contract.Requires(context != null);
+            Contract.Requires(message != null);
+            Contract.Requires(output != null);
+
+            int bodyLength = message.ReadableBytes;
+            int headerLength = ComputeRawVarint32Size(bodyLength);
+            output.EnsureWritable(headerLength + bodyLength);
+
+            WriteRawVarint32(output, bodyLength);
+            output.WriteBytes(message, message.ReaderIndex, bodyLength);
+        }
+
+        internal static void WriteRawVarint32(IByteBuffer output, int value)
+        {
+            Contract.Requires(output != null);
+
+            while (true)
+            {
+                if ((value & ~0x7F) == 0)
+                {
+                    output.WriteByte(value);
+                    return;
+                }
+
+                output.WriteByte((value & 0x7F) | 0x80);
+                value >>= 7;
+            }
+        }
+
+        public static int ComputeRawVarint32Size(int value)
+        {
+            if ((value & (0xffffffff << 7)) == 0)
+            {
+                return 1;
+            }
+
+            if ((value & (0xffffffff << 14)) == 0)
+            {
+                return 2;
+            }
+
+            if ((value & (0xffffffff << 21)) == 0)
+            {
+                return 3;
+            }
+
+            if ((value & (0xffffffff << 28)) == 0)
+            {
+                return 4;
+            }
+
+            return 5;
+        }
+
+        public override bool IsSharable => true;
     }
 }

@@ -12,35 +12,40 @@ namespace AppMain
         // todo: maxFrameLength + safe skip + fail-fast option (just like LengthFieldBasedFrameDecoder)
         readonly short HEAD_LENG = 18;
         readonly short HEAD_FLAG = 0x71ab;
-        protected override void Decode(IChannelHandlerContext context, IByteBuffer input, List<object> output)
+        protected override void Decode(IChannelHandlerContext context, IByteBuffer byteBuffer, List<object> output)
         {
-            //包头有了
-            if (input.ReadableBytes >= HEAD_LENG)
+            if (byteBuffer.ReadableBytes >= HEAD_LENG)
             {
-                short flag = input.ReadShortLE();
-                if (flag != HEAD_FLAG)
+                int packLen = getLen(byteBuffer);
+                if (byteBuffer.ReadableBytes >= packLen)
                 {
-                    //假客户端 断开客户端 todo
-                }
-                else
-                {
-                    short len = input.ReadShortLE();
+                    short flag = byteBuffer.ReadShort();
+                    short len = byteBuffer.ReadShort();
                     len -= HEAD_LENG;
-                    short cmd = input.ReadShortLE();
-                    long playerId = input.ReadLongLE();
-                    int encryptId = input.ReadIntLE();
+                    short cmd = byteBuffer.ReadShort();
+                    long playerId = byteBuffer.ReadLong();
+                    int encryptId = byteBuffer.ReadInt();
                     PBMessage pb = new PBMessage();
                     pb.code = cmd;
                     pb.playerId = playerId;
-                    if (input.ReadableBytes >= len)
-                    {
-                        byte[] data = new byte[len];
-                        input.ReadBytes(data);
-                        pb.data = data;
-                        output.Add(pb);
-                    }
+
+                    byte[] data = new byte[15];
+                    byteBuffer.ReadBytes(data);
+                    pb.data = data;
+                    output.Add(pb);
+                }
+                else
+                {
+
                 }
             }
+        }
+        private int getLen(IByteBuffer input)
+        {
+            IByteBuffer buffer = input.Copy();
+            short headFlag = buffer.ReadShort();
+            short len = buffer.ReadShort();
+            return len;
         }
 
         static int ReadRawVarint32(IByteBuffer buffer)
