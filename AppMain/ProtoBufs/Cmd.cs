@@ -6,11 +6,9 @@ using System.Threading.Tasks;
 
 namespace AppMain
 {
-    public class PBMessage
+    public class Cmd
     {
-        public long playerId;
-        public byte[] data;
-        public int cmd;
-        public int len;
+        public static int playerSanp = 12001;
+
     }
 }

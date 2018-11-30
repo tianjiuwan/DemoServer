@@ -22,10 +22,8 @@ namespace AppMain
         {
             IEventLoopGroup bossGroup;
             IEventLoopGroup workerGroup;
-
             bossGroup = new MultithreadEventLoopGroup(1);
             workerGroup = new MultithreadEventLoopGroup();    
-
             try
             {
                 var bootstrap = new ServerBootstrap();
@@ -37,14 +35,8 @@ namespace AppMain
                     .ChildHandler(new ActionChannelInitializer<IChannel>(channel =>
                     {
                         IChannelPipeline pipeline = channel.Pipeline;
-                        //if (tlsCertificate != null)
-                        //{
-                        //    pipeline.AddLast("tls", TlsHandler.Server(tlsCertificate));
-                        //}
                         pipeline.AddLast(new LoggingHandler("SRV-CONN"));
                         pipeline.AddLast("stringDecoder", new PBDecoder());
-                        //pipeline.AddLast("stringEncoder", new ProtobufVarint32LengthFieldPrepender());
-                        //pipeline.AddLast("echo", new EchoServerHandler());
                         pipeline.AddLast(new TestServerHandler());
                     }));
                 IChannel boundChannel = await bootstrap.BindAsync(8007);

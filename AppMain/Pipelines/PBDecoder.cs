@@ -26,7 +26,7 @@ namespace AppMain
                     long playerId = byteBuffer.ReadLong();
                     int encryptId = byteBuffer.ReadInt();
                     PBMessage pb = new PBMessage();
-                    pb.code = cmd;
+                    pb.cmd = cmd;
                     pb.playerId = playerId;
 
                     byte[] data = new byte[15];
