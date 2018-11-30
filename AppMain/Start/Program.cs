@@ -43,7 +43,7 @@ namespace AppMain
                         //}
                         pipeline.AddLast(new LoggingHandler("SRV-CONN"));
                         pipeline.AddLast("stringDecoder", new PBDecoder());
-                        pipeline.AddLast("stringEncoder", new ProtobufVarint32LengthFieldPrepender());
+                        //pipeline.AddLast("stringEncoder", new ProtobufVarint32LengthFieldPrepender());
                         //pipeline.AddLast("echo", new EchoServerHandler());
                         pipeline.AddLast(new TestServerHandler());
                     }));
