@@ -22,14 +22,13 @@ namespace AppMain
                     short flag = byteBuffer.ReadShort();
                     short len = byteBuffer.ReadShort();
                     len -= HEAD_LENG;
-                    short cmd = byteBuffer.ReadShort();
+                    short cmd = byteBuffer.ReadShort();                    
                     long playerId = byteBuffer.ReadLong();
                     int encryptId = byteBuffer.ReadInt();
                     PBMessage pb = new PBMessage();
                     pb.cmd = cmd;
                     pb.playerId = playerId;
-
-                    byte[] data = new byte[15];
+                    byte[] data = new byte[len];
                     byteBuffer.ReadBytes(data);
                     pb.data = data;
                     output.Add(pb);

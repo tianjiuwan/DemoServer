@@ -12,13 +12,15 @@
 
         /// <summary>
         /// 进入的消息
+        /// 协议号一定要前后端对应 如果没有对应的handler则不会处理消息
         /// </summary>
         /// <param name="context"></param>
         /// <param name="message"></param>
         protected override void ChannelRead0(IChannelHandlerContext context, object message)
-        {
+        {            
             PBMessage pbs = message as PBMessage;
             int cmd = pbs.cmd;
+            Console.WriteLine("服务器接受到客户端消息  cmd  ---> " + cmd);
             if (handlerMap.ContainsKey(cmd)) {
                 handlerMap[cmd].onExecute(context, pbs);
             }
