@@ -45,10 +45,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Modulus\Base\BaseControl.cs" />
+    <Compile Include="Modulus\Handler\PlayerSnapControl.cs" />
+    <Compile Include="Modulus\Interface\IDispose.cs" />
     <Compile Include="PBMessage\PBMessage.cs" />
     <Compile Include="PBReadWrite\ProtobufSerializer.cs" />
     <Compile Include="Pipelines\PBDecoder.cs" />
     <Compile Include="Pipelines\PBEncoder.cs" />
+    <Compile Include="ProtoBufs\Cmd.cs" />
     <Compile Include="ProtoBufs\PlayerSnapShootMsg.cs" />
     <Compile Include="Start\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
