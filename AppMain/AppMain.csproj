@@ -45,7 +45,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Modulus\AOI\Entity\Base\BaseEntity.cs" />
+    <Compile Include="Modulus\AOI\Grid\Grid.cs" />
+    <Compile Include="Modulus\AOI\Math\Vector2.cs" />
+    <Compile Include="Modulus\AOI\Math\Vector3.cs" />
+    <Compile Include="Modulus\AOI\Mgr\AOIMgr.cs" />
     <Compile Include="Modulus\Base\BaseControl.cs" />
+    <Compile Include="Modulus\Common\Singleton.cs" />
     <Compile Include="Modulus\Handler\PlayerSnapControl.cs" />
     <Compile Include="Modulus\Interface\IDispose.cs" />
     <Compile Include="PBMessage\PBMessage.cs" />
@@ -102,6 +108,8 @@
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Modulus\AOI\Cell\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
