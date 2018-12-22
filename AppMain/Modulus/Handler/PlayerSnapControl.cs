@@ -20,12 +20,14 @@ namespace AppMain
             pb.PlayerSnapShootMsg sanp = ProtobufSerializer.DeSerialize<pb.PlayerSnapShootMsg>(pbs.data);
             Console.WriteLine("服务器PlayerSnapControl接受到玩家消息 username " + sanp.username);
             //处理逻辑
-
             //返回消息给服务器
             pb.PlayerSnapShootMsg rtn = new pb.PlayerSnapShootMsg();
             rtn.playerId = 1000001;
             rtn.username = "server-cocotang";
-            send(ctx, rtn);
+            //单独回
+            //send(ctx, rtn);
+            //广播
+            boradcast(rtn);
         }
     }
 }

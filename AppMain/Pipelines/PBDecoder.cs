@@ -11,7 +11,6 @@ namespace AppMain
     {
         // todo: maxFrameLength + safe skip + fail-fast option (just like LengthFieldBasedFrameDecoder)
         readonly short HEAD_LENG = 18;
-        readonly short HEAD_FLAG = 0x71ab;
         protected override void Decode(IChannelHandlerContext context, IByteBuffer byteBuffer, List<object> output)
         {
             if (byteBuffer.ReadableBytes >= HEAD_LENG)

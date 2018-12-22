@@ -37,6 +37,7 @@ namespace AppMain
                         IChannelPipeline pipeline = channel.Pipeline;
                         pipeline.AddLast(new LoggingHandler("SRV-CONN"));
                         pipeline.AddLast("stringDecoder", new PBDecoder());
+                      //  pipeline.AddLast("stringEncoder", new PBEncoder());
                         pipeline.AddLast(new TestServerHandler());
                     }));
                 IChannel boundChannel = await bootstrap.BindAsync(8007);

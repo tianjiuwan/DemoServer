@@ -5,7 +5,9 @@
     using DotNetty.Buffers;
     using System.Collections.Generic;
 
-
+    /// <summary>
+    /// 管理类
+    /// </summary>
     public class TestServerHandler : SimpleChannelInboundHandler<object>
     {
         private Dictionary<int, BaseControl> handlerMap = new Dictionary<int, BaseControl>();
@@ -34,13 +36,22 @@
         /// <param name="ctx"></param>
         public override void ChannelActive(IChannelHandlerContext ctx)
         {
-            Console.WriteLine("有客户端链接-------------------------------> ");
+            Console.WriteLine("客户端链接-->>>> " );
+            ChannelGroup.Instance.add(ctx.Channel);
             handlerMap.Add(Cmd.playerSanp, new PlayerSnapControl());
+        }
+
+        public override void HandlerRemoved(IChannelHandlerContext context)
+        {
+            base.HandlerRemoved(context);
+            ChannelGroup.Instance.remove(context.Channel);
+            Console.WriteLine("客户端断开连接-->>>> ");
         }
 
         public override void ExceptionCaught(IChannelHandlerContext ctx, Exception e)
         {
             Console.WriteLine("{0}", e.ToString());
+            ChannelGroup.Instance.remove(ctx.Channel);
             ctx.CloseAsync();
         }
     }
