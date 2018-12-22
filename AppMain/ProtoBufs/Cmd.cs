@@ -8,7 +8,9 @@ namespace AppMain
 {
     public class Cmd
     {
-        public static int playerSanp = 12001;
-
+        public static short playerInfoMsgReq = 12002;
+        public static short playerInfoMsgResp = 12003;
+        public static short playerPosReq = 12004;
+        public static short playerPosResp = 12005;
     }
 }

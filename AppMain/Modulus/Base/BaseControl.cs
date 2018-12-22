@@ -21,7 +21,7 @@
         /// </summary>
         /// <param name="ctx"></param>
         /// <param name="obj"></param>
-        public void send(IChannelHandlerContext ctx, Object obj)
+        public void send(IChannelHandlerContext ctx,Object obj)
         {
             byte[] data = ProtobufSerializer.Serialize(obj);
             int len = data.Length;
@@ -32,8 +32,19 @@
             buffer.WriteLong(90000001001);
             buffer.WriteInt(0);
             buffer.WriteBytes(data);
-            //马上返回一条消息给客户端
-            Console.WriteLine("服务器返回一条消息给客户端------------------------------- ");
+            ctx.WriteAndFlushAsync(buffer);
+        }
+        public void send(IChannelHandlerContext ctx,short cmd, Object obj)
+        {
+            byte[] data = ProtobufSerializer.Serialize(obj);
+            int len = data.Length;
+            IByteBuffer buffer = Unpooled.Buffer();
+            buffer.WriteShort(HEAD_FIX);
+            buffer.WriteShort((short)(HEAD_LENG + len));
+            buffer.WriteShort(cmd);
+            buffer.WriteLong(-1);
+            buffer.WriteInt(0);
+            buffer.WriteBytes(data);
             ctx.WriteAndFlushAsync(buffer);
         }
 

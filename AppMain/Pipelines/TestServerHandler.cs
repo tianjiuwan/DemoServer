@@ -36,16 +36,17 @@
         /// <param name="ctx"></param>
         public override void ChannelActive(IChannelHandlerContext ctx)
         {
-            Console.WriteLine("客户端链接-->>>> " );
+            Console.WriteLine("<<<<----客户端链接 " );
             ChannelGroup.Instance.add(ctx.Channel);
-            handlerMap.Add(Cmd.playerSanp, new PlayerSnapControl());
+            handlerMap.Add(Cmd.playerInfoMsgReq, new PlayerCreateControl());
+            handlerMap.Add(Cmd.playerPosReq, new PlayerPosControl());
         }
 
         public override void HandlerRemoved(IChannelHandlerContext context)
         {
             base.HandlerRemoved(context);
             ChannelGroup.Instance.remove(context.Channel);
-            Console.WriteLine("客户端断开连接-->>>> ");
+            Console.WriteLine("客户端断开连接--->>>> ");
         }
 
         public override void ExceptionCaught(IChannelHandlerContext ctx, Exception e)
