@@ -38,8 +38,8 @@
         {
             Console.WriteLine("<<<<----客户端链接 " );
             ChannelGroup.Instance.add(ctx.Channel);
-            handlerMap.Add(Cmd.playerInfoMsgReq, new PlayerCreateControl());
-            handlerMap.Add(Cmd.playerPosReq, new PlayerPosControl());
+            handlerMap.Add(101, new PlayerCreateControl());
+            handlerMap.Add(103, new PlayerPosControl());
         }
 
         public override void HandlerRemoved(IChannelHandlerContext context)
