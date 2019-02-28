@@ -28,7 +28,7 @@ namespace AppMain
             rtn.speed = msg.speed;
             rtn.utcTime = (long)TimerUtils.getMillTimer();
 
-            //boradcast(rtn);
+            boradcast(rtn, 104, pbs.playerId);
         }
 
         private void updatePos(SyncPlayerPosReq msg, long playerId)

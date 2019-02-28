@@ -8,7 +8,6 @@ namespace AppMain
 
     public class PlayerCreateControl : BaseControl
     {
-        private int uidIndex = 900010000;
         private string userName = "coco";
 
         public override void onDispose()
@@ -19,47 +18,43 @@ namespace AppMain
         //请求创建玩家
         public override void onExecute(IChannelHandlerContext ctx, PBMessage pbs)
         {
-            Console.WriteLine("PlayerCreateControl msg.playerId " + pbs.playerId);
             pb.GetPlayerInfoMsg msg = ProtobufSerializer.DeSerialize<pb.GetPlayerInfoMsg>(pbs.data);
             //返回
-            pb.PlayerInfoMsg rtn = new pb.PlayerInfoMsg();
-            uidIndex++;
-            string name = userName + uidIndex;
-            rtn.playerId = uidIndex;
-            rtn.name = name;
-            rtn.resName = @"AssetBundle\Prefabs\model\rolemine\role_mine";
-            //pos
-            pb.PBVector2 pos = new pb.PBVector2();
-            pos.x = -3 * 1000;
-            pos.y = -3 * 1000;
-            rtn.pos = pos;
-            //move box
-            PBVector2 moveBox = new PBVector2();
-            moveBox.x = (long)(2 * 1000);
-            moveBox.y = (long)(0.4f * 1000);
-            rtn.moveBox = moveBox;
-            //height
-            rtn.height = 0;
-            //speed
-            rtn.speed = (long)(3 * 1000);
-            //jumpSpeed
-            rtn.jumpSpeed = (long)(4 * 1000);
-            //缩放
-            PBVector3 scale = new PBVector3();
-            scale.x = (long)(0.5f * 1000);
-            scale.y = (long)(0.5f * 1000);
-            scale.z = (long)(1 * 1000);
-            rtn.scale = scale;
-            //role Type
-            rtn.roleType = 2;
-            //hit box
-            PBVector2 hitBox = new PBVector2();
-            hitBox.x = (long)(2.5f * 1000);
-            hitBox.y = (long)(3.5f * 1000);
-            rtn.hitBox = hitBox;
-            //通知客户端创建实体
+            long uid = MathUtils.UniqueID;
+            string name = userName;
+            PlayerInfoMsg rtn = getInfoMsg(uid, name, 2);
+            Console.WriteLine("PlayerCreateControl msg.playerId " + rtn.playerId);
+            //服务器创建实体
             createRole(rtn);
-            send(ctx, 102, rtn);
+            //通知客户端创建实体
+            send(ctx, 102, rtn, 0);
+            //
+            boardSuffRole(rtn);
+            //
+            boardPreRole(rtn.playerId, ctx);
+        }
+
+        //通知当前已经连接的玩家
+        private void boardSuffRole(PlayerInfoMsg rtn)
+        {
+            rtn.roleType = 3;
+            boradcast(rtn, 102, 0);
+        }
+
+        //通知当前玩家之前连接的玩家
+        private void boardPreRole(long playerId, IChannelHandlerContext ctx)
+        {
+            Dictionary<long, BaseEntity> pool = EntityMgr.getPool();
+            var ier = pool.GetEnumerator();
+            while (ier.MoveNext())
+            {
+                BaseEntity role = ier.Current.Value;
+                if (role.UID != playerId)
+                {
+                    PlayerInfoMsg rtn = getInfoMsg(role.UID, role.RoleData.nickName, 3, role);
+                    send(ctx, 102, rtn);
+                }
+            }
         }
 
         private void createRole(PlayerInfoMsg msg)
@@ -81,6 +76,44 @@ namespace AppMain
             roleData.roleType = (Role_Type)(msg.roleType);
             roleData.hitBox = new TwlPhy.Vector2(msg.hitBox.x * 0.001f, msg.hitBox.y * 0.001f);
             EntityMgr.createRole<NetPlayer>(roleData);
+        }
+
+        private PlayerInfoMsg getInfoMsg(long id, string name, int roleType, BaseEntity role = null)
+        {
+            pb.PlayerInfoMsg rtn = new pb.PlayerInfoMsg();
+            rtn.playerId = id;
+            rtn.name = name;
+            rtn.resName = @"AssetBundle\Prefabs\model\rolemine\role_mine";
+            //pos
+            pb.PBVector2 pos = new pb.PBVector2();
+            pos.x = role != null ? (long)(role.DyBox.centerX * 1000) : -3 * 1000;
+            pos.y = role != null ? (long)(role.DyBox.centerY * 1000) : -3 * 1000;
+            rtn.pos = pos;
+            //move box
+            PBVector2 moveBox = new PBVector2();
+            moveBox.x = (long)(2 * 1000);
+            moveBox.y = (long)(0.4f * 1000);
+            rtn.moveBox = moveBox;
+            //height
+            rtn.height = 0;
+            //speed
+            rtn.speed = (long)(3 * 1000);
+            //jumpSpeed
+            rtn.jumpSpeed = (long)(4 * 1000);
+            //缩放
+            PBVector3 scale = new PBVector3();
+            scale.x = (long)(0.5f * 1000);
+            scale.y = (long)(0.5f * 1000);
+            scale.z = (long)(1 * 1000);
+            rtn.scale = scale;
+            //role Type
+            rtn.roleType = roleType;
+            //hit box
+            PBVector2 hitBox = new PBVector2();
+            hitBox.x = (long)(2.5f * 1000);
+            hitBox.y = (long)(3.5f * 1000);
+            rtn.hitBox = hitBox;
+            return rtn;
         }
     }
 

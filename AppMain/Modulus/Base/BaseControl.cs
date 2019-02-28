@@ -16,25 +16,7 @@
         /// <param name="pbs"></param>
         public abstract void onExecute(IChannelHandlerContext ctx, PBMessage pbs);
 
-        /// <summary>
-        /// 发送消息
-        /// </summary>
-        /// <param name="ctx"></param>
-        /// <param name="obj"></param>
-        public void send(IChannelHandlerContext ctx,Object obj)
-        {
-            byte[] data = ProtobufSerializer.Serialize(obj);
-            int len = data.Length;
-            IByteBuffer buffer = Unpooled.Buffer();
-            buffer.WriteShort(HEAD_FIX);
-            buffer.WriteShort((short)(HEAD_LENG + len));
-            buffer.WriteShort(12001);
-            buffer.WriteLong(90000001001);
-            buffer.WriteInt(0);
-            buffer.WriteBytes(data);
-            ctx.WriteAndFlushAsync(buffer);
-        }
-        public void send(IChannelHandlerContext ctx,short cmd, Object obj)
+        public void send(IChannelHandlerContext ctx, short cmd, Object obj, long playerId = 0)
         {
             byte[] data = ProtobufSerializer.Serialize(obj);
             int len = data.Length;
@@ -42,20 +24,21 @@
             buffer.WriteShort(HEAD_FIX);
             buffer.WriteShort((short)(HEAD_LENG + len));
             buffer.WriteShort(cmd);
-            buffer.WriteLong(-1);
+            buffer.WriteLong(playerId);
             buffer.WriteInt(0);
             buffer.WriteBytes(data);
             ctx.WriteAndFlushAsync(buffer);
         }
 
-        public void boradcast(Object obj) {
+        public void boradcast(Object obj,short cmd, long playerId)
+        {
             byte[] data = ProtobufSerializer.Serialize(obj);
             int len = data.Length;
             IByteBuffer buffer = Unpooled.Buffer();
             buffer.WriteShort(HEAD_FIX);
             buffer.WriteShort((short)(HEAD_LENG + len));
-            buffer.WriteShort(12001);
-            buffer.WriteLong(90000001001);
+            buffer.WriteShort(cmd);
+            buffer.WriteLong(playerId);
             buffer.WriteInt(0);
             buffer.WriteBytes(data);
             ChannelGroup.Instance.boradcast(buffer);
