@@ -6,6 +6,7 @@ namespace AppMain
     using System;
     using System.IO;
     using System.Security.Cryptography.X509Certificates;
+    using System.Threading;
     using System.Threading.Tasks;
     using DotNetty.Codecs;
     using DotNetty.Codecs.Protobuf;
@@ -23,7 +24,7 @@ namespace AppMain
             IEventLoopGroup bossGroup;
             IEventLoopGroup workerGroup;
             bossGroup = new MultithreadEventLoopGroup(1);
-            workerGroup = new MultithreadEventLoopGroup();    
+            workerGroup = new MultithreadEventLoopGroup();
             try
             {
                 var bootstrap = new ServerBootstrap();
@@ -37,7 +38,7 @@ namespace AppMain
                         IChannelPipeline pipeline = channel.Pipeline;
                         pipeline.AddLast(new LoggingHandler("SRV-CONN"));
                         pipeline.AddLast("stringDecoder", new PBDecoder());
-                      //  pipeline.AddLast("stringEncoder", new PBEncoder());
+                        //  pipeline.AddLast("stringEncoder", new PBEncoder());
                         pipeline.AddLast(new TestServerHandler());
                     }));
                 IChannel boundChannel = await bootstrap.BindAsync(8007);
@@ -50,8 +51,17 @@ namespace AppMain
                     bossGroup.ShutdownGracefullyAsync(TimeSpan.FromMilliseconds(100), TimeSpan.FromSeconds(1)),
                     workerGroup.ShutdownGracefullyAsync(TimeSpan.FromMilliseconds(100), TimeSpan.FromSeconds(1)));
             }
+
         }
 
-        static void Main() => RunServerAsync().Wait();
+        static void Main()
+        {
+            RunServerAsync().Wait();
+            while (true)
+            {
+                FrameMgr.Instance.tick();
+                Thread.Sleep(16);
+            }
+        }
     }
 }

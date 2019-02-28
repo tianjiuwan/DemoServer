@@ -19,8 +19,8 @@ namespace AppMain
         //请求创建玩家
         public override void onExecute(IChannelHandlerContext ctx, PBMessage pbs)
         {
+            Console.WriteLine("PlayerCreateControl msg.playerId " + pbs.playerId);
             pb.GetPlayerInfoMsg msg = ProtobufSerializer.DeSerialize<pb.GetPlayerInfoMsg>(pbs.data);
-            Console.WriteLine("PlayerCreateControl msg.playerId " + msg.playerId);
             //返回
             pb.PlayerInfoMsg rtn = new pb.PlayerInfoMsg();
             uidIndex++;
@@ -58,7 +58,30 @@ namespace AppMain
             hitBox.y = (long)(3.5f * 1000);
             rtn.hitBox = hitBox;
             //通知客户端创建实体
+            createRole(rtn);
             send(ctx, 102, rtn);
         }
+
+        private void createRole(PlayerInfoMsg msg)
+        {
+            if (EntityMgr.getRole<BaseEntity>(msg.playerId) != null)
+            {
+                return;
+            }
+            RoleData roleData = Pool.PoolMgr.Instance.getData<RoleData>();
+            roleData.uid = msg.playerId;
+            roleData.nickName = msg.name;
+            roleData.resName = msg.resName;
+            roleData.pos = new TwlPhy.Vector2(msg.pos.x * 0.001f, msg.pos.y * 0.001f);
+            roleData.moveBox = new TwlPhy.Vector2(msg.moveBox.x * 0.001f, msg.moveBox.y * 0.001f);
+            roleData.height = msg.height * 0.001f;
+            roleData.speed = msg.speed * 0.001f;
+            roleData.jumpSpeed = msg.jumpSpeed * 0.001f;
+            roleData.scale = new TwlPhy.Vector3(msg.scale.x * 0.001f, msg.scale.y * 0.001f, msg.scale.z * 0.001f);
+            roleData.roleType = (Role_Type)(msg.roleType);
+            roleData.hitBox = new TwlPhy.Vector2(msg.hitBox.x * 0.001f, msg.hitBox.y * 0.001f);
+            EntityMgr.createRole<NetPlayer>(roleData);
+        }
     }
+
 }

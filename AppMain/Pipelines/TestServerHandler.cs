@@ -21,9 +21,9 @@
         protected override void ChannelRead0(IChannelHandlerContext context, object message)
         {            
             PBMessage pbs = message as PBMessage;
-            int cmd = pbs.cmd;
-            Console.WriteLine("服务器接受到客户端消息  cmd  ---> " + cmd);
+            int cmd = pbs.cmd;            
             if (handlerMap.ContainsKey(cmd)) {
+                //Console.WriteLine("服务器接受到客户端消息  cmd  ---> " + cmd);
                 handlerMap[cmd].onExecute(context, pbs);
             }
         }
