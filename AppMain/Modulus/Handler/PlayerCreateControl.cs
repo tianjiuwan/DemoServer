@@ -75,6 +75,7 @@ namespace AppMain
             roleData.scale = new TwlPhy.Vector3(msg.scale.x * 0.001f, msg.scale.y * 0.001f, msg.scale.z * 0.001f);
             roleData.roleType = (Role_Type)(msg.roleType);
             roleData.hitBox = new TwlPhy.Vector2(msg.hitBox.x * 0.001f, msg.hitBox.y * 0.001f);
+            roleData.lookFlag = LookFlag.Right;
             EntityMgr.createRole<NetPlayer>(roleData);
         }
 
@@ -113,6 +114,8 @@ namespace AppMain
             hitBox.x = (long)(2.5f * 1000);
             hitBox.y = (long)(3.5f * 1000);
             rtn.hitBox = hitBox;
+            //look flag
+            rtn.lookFlag = role != null ? role.lookFlag == LookFlag.Right ? 1 : 0 : 1;
             return rtn;
         }
     }

@@ -25,7 +25,9 @@ namespace AppMain
             pb.SyncPlayerPosResp rtn = new pb.SyncPlayerPosResp();
             rtn.playerId = pbs.playerId;
             rtn.dir = msg.dir;
+            rtn.pos = msg.pos;
             rtn.speed = msg.speed;
+            rtn.isKnock = msg.isKnock;
             rtn.utcTime = (long)TimerUtils.getMillTimer();
 
             boradcast(rtn, 104, pbs.playerId);
@@ -42,9 +44,15 @@ namespace AppMain
                 //role.doMove(new Vector2(msg.dir.x * 0.001f, msg.dir.y * 0.001f));
                 //服务器玩家直接踢到预测点
                 float add = (long)(TimerUtils.getMillTimer() - msg.utcTime) * 0.001f;
-                pos.x += msg.dir.x * 0.001f * msg.speed * 0.001f * interval * add;//当前x+延迟x
-                pos.y += msg.dir.y * 0.001f * msg.speed * 0.001f * interval * add;
-
+                if (msg.isKnock == 1)
+                {
+                    pos.x += msg.dir.x * 0.001f * msg.speed * 0.001f * interval * add;//当前x+延迟x
+                    pos.y += msg.dir.y * 0.001f * msg.speed * 0.001f * interval * add;
+                }
+                if (msg.dir.x != 0)
+                {
+                    role.changeLookFlag(msg.dir.x > 0 ? LookFlag.Right : LookFlag.Left);
+                }
                 role.DyBox.UpdateCenter(pos.x, pos.y);
                 role.HitBox.UpdateCenter(pos.x, pos.y);
                 Console.WriteLine(string.Format("更新玩家{0}坐标完成,延迟{1},x:{2},y:{3}", playerId, add, pos.x, pos.y));

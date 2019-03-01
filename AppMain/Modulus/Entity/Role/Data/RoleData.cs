@@ -21,5 +21,7 @@ public class RoleData : PoolObject
     public Role_Type roleType = Role_Type.None;
     //受击碰撞盒
     public Vector2 hitBox = new Vector2(3, 6);
+    //面向
+    public LookFlag lookFlag = LookFlag.Right;
 }
 

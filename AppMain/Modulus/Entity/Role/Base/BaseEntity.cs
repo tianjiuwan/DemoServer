@@ -244,6 +244,8 @@ public class BaseEntity : IDispose
         //碰撞器位置和大小
         dyBox = new DymicBox3D(RoleData.pos.x, RoleData.pos.y, RoleData.moveBox.x, RoleData.moveBox.y, RoleData.height);
         hitBox = new DymicBox3D(RoleData.pos.x, RoleData.pos.y, RoleData.hitBox.x, RoleData.hitBox.y, RoleData.height);
+        //look 
+        this.lookFlag = RoleData.lookFlag;
         //高度
         this.Height = RoleData.height;
         //速度 跳跃速度
